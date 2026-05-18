@@ -36,7 +36,7 @@ def main():
             elif not jd.strip():
                 st.warning("Please enter the job requirements.")
 
-    elif page == "Methodology":
+    elif page == "Overview":
         ui.render_methodology()
 
     elif page == "System Evaluation":

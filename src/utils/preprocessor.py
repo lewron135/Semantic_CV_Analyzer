@@ -1,4 +1,3 @@
-# Must stay in sync with notebook Section 6-7
 import re
 import unicodedata
 import nltk

@@ -111,7 +111,6 @@ def tfidf_similarity(cv_text: str, jd_text: str, tfidf_vectorizer) -> float | No
     if tfidf_vectorizer is None:
         return None
     from sklearn.metrics.pairwise import cosine_similarity
-    import numpy as np
 
     cv_clean = full_preprocess(cv_text)
     jd_clean = full_preprocess(jd_text)

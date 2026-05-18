@@ -242,7 +242,7 @@ def render_sidebar(tfidf_available: bool) -> str:
         st.markdown('<div class="nav-label">Navigation</div>', unsafe_allow_html=True)
         page = st.radio(
             "",
-            options=["Analyzer", "Methodology", "System Evaluation"],
+            options=["Overview", "Analyzer", "System Evaluation"],
             label_visibility="collapsed",
         )
 
@@ -375,7 +375,7 @@ def render_ner_section(ner_html: str) -> None:
 
 
 def render_methodology() -> None:
-    st.markdown('<p class="page-title">Methodology</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-title">Overview</p>', unsafe_allow_html=True)
     st.markdown('<p class="page-subtitle">How this system works</p>', unsafe_allow_html=True)
 
     st.markdown("""
