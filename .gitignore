@@ -19,8 +19,10 @@ env/
 # Abaikan folder data mentah agar dataset 53MB tidak ter-upload
 data/raw/
 
-# TAPI: Pastikan data yang sudah bersih (nyawa aplikasi) tetap ikut ter-upload
-# Kita gunakan tanda '!' untuk memberikan pengecualian
+# Abaikan folder Samples agar tidak ter-upload
+Samples/
+
+
 !data/processed/cleaned_resumes.csv
 
 # Simpan model TF-IDF agar app bisa langsung jalan

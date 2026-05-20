@@ -39,6 +39,9 @@ def main():
     elif page == "Overview":
         ui.render_methodology()
 
+    elif page == "Candidate Ranking":
+        ui.render_candidate_ranking(nlp, sbert, tfidf)
+
     elif page == "System Evaluation":
         ui.render_evaluation()
 

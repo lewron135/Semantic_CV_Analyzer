@@ -242,7 +242,7 @@ def render_sidebar(tfidf_available: bool) -> str:
         st.markdown('<div class="nav-label">Navigation</div>', unsafe_allow_html=True)
         page = st.radio(
             "",
-            options=["Overview", "Analyzer", "System Evaluation"],
+            options=["Overview", "Analyzer", "Candidate Ranking", "System Evaluation"],
             label_visibility="collapsed",
         )
 
@@ -424,6 +424,176 @@ def render_methodology() -> None:
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+
+def render_candidate_ranking(nlp, sbert_model, tfidf_vectorizer) -> None:
+    import PyPDF2
+    from src.extraction.engine import extract_features, calculate_semantic_score
+    from src.utils.preprocessor import pdf_clean
+
+    GREEN = "#1D9E75"
+    BLUE = "#378ADD"
+    GRAY = "#888780"
+    _card_base = "background:#111111; border:1px solid #1e1e1e; border-radius:8px; padding:20px 16px; text-align:center;"
+
+    st.markdown('<p class="page-title">Candidate Ranking</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-subtitle">Upload multiple resumes and rank by semantic match</p>', unsafe_allow_html=True)
+
+    col_left, col_right = st.columns([1, 1.4], gap="large")
+    with col_left:
+        st.markdown('<div class="section-label">Resumes — Multiple PDFs</div>', unsafe_allow_html=True)
+        uploaded_files = st.file_uploader(
+            "Drop PDFs here",
+            type=["pdf"],
+            accept_multiple_files=True,
+            label_visibility="collapsed",
+        )
+    with col_right:
+        st.markdown('<div class="section-label">Job Description</div>', unsafe_allow_html=True)
+        jd_text = st.text_area(
+            "Paste the job description or qualifications",
+            height=140,
+            placeholder="e.g. Required: Python, 3+ years experience in machine learning, proficiency in SQL...",
+            label_visibility="collapsed",
+        )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_slider, col_btn = st.columns([2, 1], gap="large")
+    with col_slider:
+        st.markdown('<div class="section-label">Top-K</div>', unsafe_allow_html=True)
+        top_k = st.slider("Top-K Candidates", min_value=3, max_value=20, value=5, label_visibility="collapsed")
+    with col_btn:
+        st.markdown("<br>", unsafe_allow_html=True)
+        rank_clicked = st.button("Rank Candidates")
+
+    if not rank_clicked:
+        return
+
+    if not jd_text.strip():
+        st.error("Job description is empty. Please enter job requirements before ranking.")
+        return
+
+    if not uploaded_files or len(uploaded_files) < 2:
+        st.warning("Please upload at least 2 PDF resumes to compare and rank.")
+        return
+
+    results = []
+    with st.spinner("Analyzing candidates..."):
+        clean_jd = pdf_clean(jd_text)
+        doc_jd = nlp(clean_jd)
+        jd_features = extract_features(doc_jd, sbert_model)
+
+        for pdf_file in uploaded_files:
+            try:
+                reader = PyPDF2.PdfReader(pdf_file)
+                raw_text = " ".join(p.extract_text() or "" for p in reader.pages)
+                clean_cv = pdf_clean(raw_text)
+                doc_cv = nlp(clean_cv)
+                cv_features = extract_features(doc_cv, sbert_model)
+
+                if not cv_features:
+                    score = 0.0
+                else:
+                    score, _ = calculate_semantic_score(cv_features, jd_features, sbert_model)
+
+                results.append({
+                    "filename": pdf_file.name,
+                    "score": score,
+                    "cv_features": cv_features,
+                })
+            except Exception:
+                st.warning(f"Could not read \"{pdf_file.name}\" — file skipped.")
+
+    if not results:
+        st.error("No resumes could be processed. Please check your PDF files.")
+        return
+
+    results.sort(key=lambda x: x["score"], reverse=True)
+    top_results = results[:top_k]
+
+    total_uploaded = len(uploaded_files)
+    candidates_ranked = len(results)
+    top_score = top_results[0]["score"] / 100 if top_results else 0.0
+    avg_score = sum(r["score"] for r in results) / len(results) / 100
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<div class="section-label">Summary</div>', unsafe_allow_html=True)
+    mc1, mc2, mc3, mc4 = st.columns(4, gap="small")
+    with mc1:
+        st.markdown(f"""
+        <div style="{_card_base}">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">TOTAL UPLOADED</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:#e8e4dd; margin:0; line-height:1;">{total_uploaded}</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">PDF files</p>
+        </div>""", unsafe_allow_html=True)
+    with mc2:
+        st.markdown(f"""
+        <div style="{_card_base}">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">CANDIDATES RANKED</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:#e8e4dd; margin:0; line-height:1;">{candidates_ranked}</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">processed</p>
+        </div>""", unsafe_allow_html=True)
+    with mc3:
+        st.markdown(f"""
+        <div style="{_card_base} border-top:3px solid {GREEN};">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">TOP SCORE</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{GREEN}; margin:0; line-height:1;">{top_score:.3f}</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">semantic match</p>
+        </div>""", unsafe_allow_html=True)
+    with mc4:
+        st.markdown(f"""
+        <div style="{_card_base} border-top:3px solid {BLUE};">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">AVG SCORE</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{BLUE}; margin:0; line-height:1;">{avg_score:.3f}</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">across all CVs</p>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown(f'<div class="section-label">Top-{min(top_k, len(top_results))} Ranking</div>', unsafe_allow_html=True)
+
+    for rank, candidate in enumerate(top_results, 1):
+        display_score = candidate["score"] / 100
+
+        if display_score >= 0.65:
+            tier, tier_color = "Strong Match", GREEN
+            accent_style = f"border-left:3px solid {GREEN};"
+            badge_style = f"background:rgba(29,158,117,0.12); color:{GREEN}; border:1px solid rgba(29,158,117,0.35);"
+        elif display_score >= 0.40:
+            tier, tier_color = "Moderate", BLUE
+            accent_style = f"border-left:3px solid {BLUE};"
+            badge_style = f"background:rgba(55,138,221,0.12); color:{BLUE}; border:1px solid rgba(55,138,221,0.35);"
+        else:
+            tier, tier_color = "Weak", GRAY
+            accent_style = f"border-left:3px solid {GRAY};"
+            badge_style = f"background:rgba(136,135,128,0.12); color:{GRAY}; border:1px solid rgba(136,135,128,0.35);"
+
+        skills = list(candidate["cv_features"])[:6]
+        skills_html = " ".join(
+            f'<span style="font-family:\'DM Mono\',monospace; font-size:0.6rem; color:#888; border:1px solid #2a2a2a; padding:2px 8px; border-radius:12px; margin-right:4px; margin-bottom:4px; display:inline-block;">{s}</span>'
+            for s in skills
+        ) if skills else '<span style="color:#333; font-size:0.72rem; font-family:\'DM Mono\',monospace;">no skills detected</span>'
+
+        col_num, col_card = st.columns([1, 11], gap="small")
+        with col_num:
+            st.markdown(f"""
+            <div style="background:#111111; border:1px solid #1e1e1e; border-radius:8px; padding:24px 8px; text-align:center;">
+                <p style="font-family:'Instrument Serif',serif; font-size:1.9rem; color:{tier_color}; margin:0; line-height:1;">#{rank}</p>
+            </div>""", unsafe_allow_html=True)
+        with col_card:
+            st.markdown(f"""
+            <div style="background:#111111; border:1px solid #1e1e1e; {accent_style} border-radius:8px; padding:18px 22px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                    <div>
+                        <p style="font-size:0.92rem; color:#e8e4dd; margin:0 0 4px 0; font-weight:500;">{candidate['filename']}</p>
+                        <p style="font-family:'DM Mono',monospace; font-size:1.3rem; color:{tier_color}; margin:0; line-height:1;">{display_score:.3f}</p>
+                    </div>
+                    <span style="font-family:'DM Mono',monospace; font-size:0.58rem; {badge_style} padding:4px 12px; border-radius:3px; letter-spacing:1.5px; white-space:nowrap;">{tier.upper()}</span>
+                </div>
+                <div style="margin-bottom:10px;">{skills_html}</div>
+            </div>""", unsafe_allow_html=True)
+            st.progress(min(display_score, 1.0))
+
+        st.markdown("<div style='margin-bottom:8px;'></div>", unsafe_allow_html=True)
 
 
 def render_evaluation() -> None:
