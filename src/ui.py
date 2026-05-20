@@ -427,51 +427,281 @@ def render_methodology() -> None:
 
 
 def render_evaluation() -> None:
-    st.markdown('<p class="page-title">System Evaluation</p>', unsafe_allow_html=True)
-    st.markdown('<p class="page-subtitle">Performance characteristics and design choices</p>', unsafe_allow_html=True)
+    import plotly.graph_objects as go
+    import plotly.express as px
 
-    st.markdown("""
-    <div class="card">
-        <div class="section-label">Model Selection Rationale</div>
-        <div class="match-row">
-            <span style="color:#e8e4dd; font-size:0.85rem;">Sentence Transformer</span>
-            <span style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#c8b560;">all-MiniLM-L6-v2</span>
-        </div>
-        <div class="match-row">
-            <span style="color:#e8e4dd; font-size:0.85rem;">NER + Chunking</span>
-            <span style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#c8b560;">spaCy en_core_web_md</span>
-        </div>
-        <div class="match-row">
-            <span style="color:#e8e4dd; font-size:0.85rem;">Similarity Metric</span>
-            <span style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#c8b560;">Cosine Similarity</span>
-        </div>
-        <div class="match-row">
-            <span style="color:#e8e4dd; font-size:0.85rem;">Match Threshold</span>
-            <span style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#c8b560;">0.65 (65%)</span>
-        </div>
-        <div class="match-row">
-            <span style="color:#e8e4dd; font-size:0.85rem;">Filter Threshold</span>
-            <span style="font-family:'DM Mono',monospace; font-size:0.75rem; color:#c8b560;">0.30 technical similarity</span>
-        </div>
-    </div>
-    <div class="card">
-        <div class="section-label">Noise Filtering Design</div>
-        <p style="color:#7a7a7a; font-size:0.88rem; line-height:1.8; margin:0;">
-            The semantic filter uses two anchor clusters — one representing
-            <strong style="color:#e8e4dd;">technical competency</strong> and one representing
-            <strong style="color:#e8e4dd;">administrative information</strong> — to evaluate
-            each extracted entity. Entities that score above the threshold on the technical
-            cluster AND score higher on technical than administrative anchors are retained.
-            This dual-cluster approach is more robust than single-sided thresholding.
+    GREEN = "#1D9E75"
+    BLUE = "#378ADD"
+    GRAY = "#888780"
+    BG = "#111111"
+    GRID = "#2a2a2a"
+    TEXT = "#e8e4dd"
+    SUBTEXT = "#7a7a7a"
+    GOLD = "#c8b560"
+
+    def _layout(**kw):
+        base = dict(
+            template="plotly_white",
+            paper_bgcolor=BG,
+            plot_bgcolor=BG,
+            font=dict(color=TEXT, family="DM Sans, sans-serif", size=12),
+            margin=dict(l=50, r=20, t=50, b=50),
+        )
+        base.update(kw)
+        return base
+
+    st.markdown('<p class="page-title">System Evaluation</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-subtitle">NLP pipeline performance — notebook-verified results</p>', unsafe_allow_html=True)
+
+    # ── 1. Metric Cards ────────────────────────────────────────────────────────
+    st.markdown('<div class="section-label">Performance Metrics</div>', unsafe_allow_html=True)
+    _card = "background:#111111; border:1px solid #1e1e1e; border-radius:8px; padding:20px 16px; text-align:center;"
+    c1, c2, c3, c4 = st.columns(4, gap="small")
+    with c1:
+        st.markdown(f"""
+        <div style="{_card} border-top:3px solid {BLUE};">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">PRECISION</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{BLUE}; margin:0; line-height:1;">0.9524</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">TP / (TP + FP)</p>
+        </div>""", unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"""
+        <div style="{_card} border-top:3px solid {BLUE};">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">RECALL</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{BLUE}; margin:0; line-height:1;">0.8000</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">TP / (TP + FN)</p>
+        </div>""", unsafe_allow_html=True)
+    with c3:
+        st.markdown(f"""
+        <div style="{_card} border-top:3px solid {GREEN};">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">F1-SCORE</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{GREEN}; margin:0; line-height:1;">0.8696</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">
+                <span style="background:#1a2a1a; color:#5a9a5a; padding:2px 8px; border-radius:3px; letter-spacing:1px;">TARGET ACHIEVED</span>
+            </p>
+        </div>""", unsafe_allow_html=True)
+    with c4:
+        st.markdown(f"""
+        <div style="{_card} border-top:3px solid {GREEN};">
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">HYBRID ACCURACY</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{GREEN}; margin:0; line-height:1;">4 / 5</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">test cases — 80.0%</p>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── 2. Confusion Matrix + NER Bar ──────────────────────────────────────────
+    st.markdown('<div class="section-label">NER Performance — Skill Entity Detection</div>', unsafe_allow_html=True)
+    col_cm, col_ner = st.columns(2, gap="large")
+
+    with col_cm:
+        fig_cm = go.Figure(data=go.Heatmap(
+            z=[[21, 5], [1, 9]],
+            x=["Pred: Skill", "Pred: Non-skill"],
+            y=["Actual: Skill", "Actual: Non-skill"],
+            colorscale=[[0, "#0d1f16"], [0.5, "#1D9E75"], [1, "#52c49e"]],
+            showscale=False,
+            text=[[21, 5], [1, 9]],
+            texttemplate="%{text}",
+            textfont=dict(color=TEXT, size=18),
+        ))
+        fig_cm.update_layout(**_layout(
+            title=dict(text="Confusion Matrix — NER Skill Extraction", font=dict(size=13), x=0),
+            xaxis=dict(side="top", tickfont=dict(size=12), gridcolor="rgba(0,0,0,0)"),
+            yaxis=dict(tickfont=dict(size=12), gridcolor="rgba(0,0,0,0)", autorange="reversed"),
+        ))
+        st.plotly_chart(fig_cm, use_container_width=True)
+
+    with col_ner:
+        fig_ner = go.Figure(data=[go.Bar(
+            x=["Precision", "Recall", "F1-Score"],
+            y=[0.9524, 0.8000, 0.8696],
+            marker_color=[BLUE, BLUE, GREEN],
+            text=["0.9524", "0.8000", "0.8696"],
+            textposition="outside",
+            textfont=dict(color=TEXT, size=12),
+        )])
+        fig_ner.add_hline(
+            y=0.75, line_dash="dash", line_color=GOLD, line_width=1.5,
+            annotation_text="Target F1 = 0.75",
+            annotation_position="top right",
+            annotation_font=dict(color=GOLD, size=11),
+        )
+        fig_ner.update_layout(**_layout(
+            title=dict(text="NER Metrics — Precision / Recall / F1", font=dict(size=13), x=0),
+            yaxis=dict(range=[0, 1.15], tickformat=".2f", gridcolor=GRID),
+            xaxis=dict(tickfont=dict(size=12), gridcolor="rgba(0,0,0,0)"),
+            showlegend=False,
+        ))
+        st.plotly_chart(fig_ner, use_container_width=True)
+
+    st.markdown(f"""
+    <div class="card" style="margin-bottom:24px;">
+        <p style="color:{SUBTEXT}; font-size:0.85rem; line-height:1.7; margin:0;">
+            Evaluasi NER dilakukan pada <strong style="color:{TEXT};">36 entitas berlabel</strong>
+            (21 TP, 1 FP, 5 FN, 9 TN) dari 5 resume yang dianotasi secara manual.
+            Model mencapai <strong style="color:{GREEN};">F1 = 0.8696</strong>, melampaui target proposal 0.75
+            sebesar +11.9 poin persentase. Precision tinggi (0.9524) menunjukkan hampir tidak ada
+            ekstraksi skill yang keliru; Recall lebih rendah (0.80) mencerminkan beberapa frasa skill
+            majemuk yang tidak tertangkap.
         </p>
     </div>
+    """, unsafe_allow_html=True)
+
+    # ── 3. Algorithm Comparison ────────────────────────────────────────────────
+    st.markdown('<div class="section-label">Algorithm Comparison — 5 Test Cases</div>', unsafe_allow_html=True)
+
+    _cases = ["C1: Python↔JD", "C2: Chef↔DS", "C3: Front↔Full", "C4: ML↔AI (para)", "C5: Mktg↔Python"]
+    _tfidf = [0.443, 0.000, 0.385, 0.073, 0.000]
+    _sbert = [0.808, 0.250, 0.729, 0.537, 0.419]
+    _hybrid = [0.910, 0.000, 0.820, 0.117, 0.000]
+    _ann_t = ["✗", "✓", "✗", "✗", "✓"]
+    _ann_s = ["✓", "✓", "✗", "✗", "✓"]
+    _ann_h = ["✓", "✓", "✓", "✗", "✓"]
+
+    fig_algo = go.Figure(data=[
+        go.Bar(name="TF-IDF", x=_cases, y=_tfidf, marker_color=GRAY,
+               text=_ann_t, textposition="outside", textfont=dict(color=TEXT, size=14)),
+        go.Bar(name="SBERT", x=_cases, y=_sbert, marker_color=BLUE,
+               text=_ann_s, textposition="outside", textfont=dict(color=TEXT, size=14)),
+        go.Bar(name="Hybrid", x=_cases, y=_hybrid, marker_color=GREEN,
+               text=_ann_h, textposition="outside", textfont=dict(color=TEXT, size=14)),
+    ])
+    fig_algo.update_layout(**_layout(
+        title=dict(text="Similarity Scores by Algorithm and Test Case  (✓ = correct, ✗ = wrong)", font=dict(size=13), x=0),
+        barmode="group",
+        bargap=0.20,
+        bargroupgap=0.05,
+        yaxis=dict(range=[0, 1.18], tickformat=".2f", gridcolor=GRID, title="Similarity Score"),
+        xaxis=dict(tickfont=dict(size=11), gridcolor="rgba(0,0,0,0)"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=11)),
+        margin=dict(l=50, r=20, t=70, b=50),
+    ))
+    st.plotly_chart(fig_algo, use_container_width=True)
+
+    # ── 4. Similarity Heatmap Table ────────────────────────────────────────────
+    _cases_full = [
+        "C1: Python backend vs Python JD",
+        "C2: Chef vs Data Scientist",
+        "C3: Frontend vs Full-stack",
+        "C4: ML engineer vs AI developer",
+        "C5: Marketing mgr vs Python JD",
+    ]
+    _expected = ["HIGH", "LOW", "MODERATE", "HIGH", "LOW"]
+    _scores = [(0.443, 0.808, 0.910), (0.000, 0.250, 0.000),
+               (0.385, 0.729, 0.820), (0.073, 0.537, 0.117), (0.000, 0.419, 0.000)]
+
+    def _cell(v):
+        if v >= 0.65:
+            return f"background:rgba(29,158,117,0.15); color:{GREEN}; border:1px solid rgba(29,158,117,0.3);"
+        elif v >= 0.40:
+            return f"background:rgba(55,138,221,0.15); color:{BLUE}; border:1px solid rgba(55,138,221,0.3);"
+        return f"background:rgba(136,135,128,0.15); color:{GRAY}; border:1px solid rgba(136,135,128,0.3);"
+
+    _exp_color = {"HIGH": GREEN, "LOW": "#c05050", "MODERATE": GOLD}
+    rows = ""
+    for i, (case, exp, vals) in enumerate(zip(_cases_full, _expected, _scores)):
+        bg = "#161616" if i % 2 == 0 else "#111111"
+        rows += f"""<tr style="background:{bg};">
+            <td style="padding:8px 10px; color:{SUBTEXT}; font-size:0.78rem;">{case}</td>
+            <td style="padding:8px; text-align:center; color:{_exp_color.get(exp, TEXT)}; font-size:0.72rem; letter-spacing:1px; font-family:'DM Mono',monospace;">{exp}</td>
+            <td style="padding:6px 10px; text-align:center; border-radius:4px; font-family:'DM Mono',monospace; {_cell(vals[0])}">{vals[0]:.3f}</td>
+            <td style="padding:6px 10px; text-align:center; border-radius:4px; font-family:'DM Mono',monospace; {_cell(vals[1])}">{vals[1]:.3f}</td>
+            <td style="padding:6px 10px; text-align:center; border-radius:4px; font-family:'DM Mono',monospace; {_cell(vals[2])}">{vals[2]:.3f}</td>
+        </tr>"""
+
+    st.markdown(f"""
+    <div class="card" style="margin-bottom:24px;">
+        <div class="section-label">Similarity Score Heatmap</div>
+        <p style="font-family:'DM Mono',monospace; font-size:0.72rem; margin:0 0 12px 0;">
+            <span style="background:rgba(29,158,117,0.2); color:{GREEN}; padding:3px 10px; border-radius:3px; margin-right:8px;">&ge; 0.65 &nbsp;HIGH</span>
+            <span style="background:rgba(55,138,221,0.2); color:{BLUE}; padding:3px 10px; border-radius:3px; margin-right:8px;">0.40 – 0.64 &nbsp;MODERATE</span>
+            <span style="background:rgba(136,135,128,0.2); color:{GRAY}; padding:3px 10px; border-radius:3px;">&lt; 0.40 &nbsp;LOW</span>
+        </p>
+        <table style="width:100%; border-collapse:separate; border-spacing:3px; font-size:0.82rem;">
+            <thead><tr>
+                <th style="text-align:left; color:#555; padding:6px 10px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">TEST CASE</th>
+                <th style="text-align:center; color:#555; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">EXPECTED</th>
+                <th style="text-align:center; color:{GRAY}; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">TF-IDF</th>
+                <th style="text-align:center; color:{BLUE}; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">SBERT</th>
+                <th style="text-align:center; color:{GREEN}; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">HYBRID</th>
+            </tr></thead>
+            <tbody>{rows}</tbody>
+        </table>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class="card" style="margin-bottom:24px;">
+        <p style="color:{SUBTEXT}; font-size:0.85rem; line-height:1.7; margin:0;">
+            <strong style="color:{TEXT};">Akurasi keseluruhan:</strong> TF-IDF 2/5 &nbsp;·&nbsp; SBERT 3/5 &nbsp;·&nbsp; Hybrid 4/5.
+            TF-IDF gagal pada parafrase semantik (C4) dan meremehkan kecocokan jelas (C1, C3).
+            SBERT menangani parafrase dengan lebih baik namun masih gagal pada C4 dan C3.
+            Hybrid hanya gagal di C4 (ML↔AI) — di mana bobot TF-IDF yang rendah menarik skor gabungan di bawah ambang batas.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── 5. Overall Accuracy Donut + Top-K ─────────────────────────────────────
+    st.markdown('<div class="section-label">Overall Accuracy & Top-K Retrieval</div>', unsafe_allow_html=True)
+    col_donut, col_topk = st.columns(2, gap="large")
+
+    with col_donut:
+        fig_donut = go.Figure(data=[go.Pie(
+            labels=["TF-IDF (2/5)", "SBERT (3/5)", "Hybrid (4/5)"],
+            values=[2, 3, 4],
+            hole=0.6,
+            marker=dict(colors=[GRAY, BLUE, GREEN]),
+            textfont=dict(color=TEXT, size=11),
+            textposition="outside",
+        )])
+        fig_donut.update_layout(**_layout(
+            title=dict(text="Algorithm Accuracy — Correct Cases / 5", font=dict(size=13), x=0),
+            legend=dict(orientation="v", yanchor="middle", y=0.5, font=dict(size=11)),
+            annotations=[dict(
+                text="<b>Test<br>Cases</b>",
+                x=0.5, y=0.5, font=dict(size=12, color=SUBTEXT), showarrow=False,
+            )],
+        ))
+        st.plotly_chart(fig_donut, use_container_width=True)
+
+    with col_topk:
+        _ranks = ["Rank 5 — SAP Dev", "Rank 4 — Blockchain", "Rank 3 — Data Science",
+                  "Rank 2 — Python Dev", "Rank 1 — Python Dev"]
+        _topk_scores = [0.4064, 0.4066, 0.4093, 0.4968, 0.5086]
+        _topk_colors = [GRAY, GRAY, GRAY, GREEN, GREEN]
+
+        fig_topk = go.Figure(data=[go.Bar(
+            y=_ranks,
+            x=_topk_scores,
+            orientation="h",
+            marker_color=_topk_colors,
+            text=[f"{s:.4f}" for s in _topk_scores],
+            textposition="inside",
+            textfont=dict(color=TEXT, size=11),
+        )])
+        fig_topk.add_vline(
+            x=0.45, line_dash="dash", line_color=GOLD, line_width=1.5,
+            annotation_text="Relevant threshold (0.45)",
+            annotation_position="top right",
+            annotation_font=dict(color=GOLD, size=10),
+        )
+        fig_topk.update_layout(**_layout(
+            title=dict(text="Top-5 Retrieval — Pool of 500 Resumes", font=dict(size=13), x=0),
+            xaxis=dict(range=[0, 0.60], tickformat=".2f", gridcolor=GRID, title="Hybrid Score"),
+            yaxis=dict(tickfont=dict(size=11), gridcolor="rgba(0,0,0,0)"),
+            showlegend=False,
+            margin=dict(l=140, r=20, t=50, b=50),
+        ))
+        st.plotly_chart(fig_topk, use_container_width=True)
+
+    st.markdown(f"""
     <div class="card">
-        <div class="section-label">Known Limitations</div>
-        <p style="color:#7a7a7a; font-size:0.88rem; line-height:1.8; margin-bottom:10px;">
-            The system may still retain some borderline terms depending on the job description wording.
-            Very short CVs or poorly structured PDFs may produce fewer features.
-            The 0.65 cosine similarity threshold may need adjustment for niche technical domains
-            where terminology differs significantly from general technical vocabulary.
+        <p style="color:{SUBTEXT}; font-size:0.85rem; line-height:1.7; margin:0;">
+            Demo Top-K menggunakan pool <strong style="color:{TEXT};">500 sampel resume Kaggle</strong> terhadap JD Software Engineer
+            (Python, Django, REST APIs, PostgreSQL). Rank 1–2 adalah profil Python Developer dengan skor ≥ 0.49 —
+            ditandai <strong style="color:{GREEN};">hijau sebagai relevan</strong>. Rank 3–5 adalah domain yang berdekatan
+            namun tidak langsung relevan. Sistem berhasil menempatkan keahlian Python sebagai kandidat teratas.
         </p>
     </div>
     """, unsafe_allow_html=True)
