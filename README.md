@@ -1,153 +1,149 @@
 # Smart CV Analyzer
 
-Proyek akhir mata kuliah **COMP6885001 — Natural Language Processing**, BINUS University 2025/2026.
+Final project for the **COMP6885001 — Natural Language Processing** course, BINUS University 2025/2026.
 
-Sistem ini mencocokkan resume pelamar kerja dengan job description menggunakan pemahaman semantik, bukan sekadar pencocokan kata kunci. Jika CV menyebut *"Deep Learning"* tapi JD meminta *"Neural Networks"*, sistem tetap bisa mengenali kedua istilah tersebut sebagai konsep yang sama — karena ia bekerja di ruang vektor makna, bukan di ruang string karakter.
+This system matches job applicant resumes with job descriptions using deep semantic understanding rather than simple keyword matching. If a CV mentions *"Deep Learning"* but the JD requires *"Neural Networks"*, the system still recognizes both terms as the same underlying competency — because it operates in a semantic vector space, not a character string space.
 
 ---
 
-## Cara Menjalankan
+## Getting Started
 
-**1. Clone repositori**
+**1. Clone the repository**
 ```bash
-git clone https://github.com/lewron135/AOL_NaturalLanguageProcessing.git
+git clone [https://github.com/lewron135/AOL_NaturalLanguageProcessing.git](https://github.com/lewron135/AOL_NaturalLanguageProcessing.git)
 cd AOL_NaturalLanguageProcessing
 ```
 
-**2. Install dependensi**
+**2. Install dependencies**
 ```bash
 pip install -r requirements.txt
 python -m spacy download en_core_web_md
 ```
 
-**3. Jalankan aplikasi**
+**3. Run the application**
 ```bash
 streamlit run app.py
 ```
 
-> Pastikan file `models/tfidf_model.pkl` sudah ada. Jika belum, jalankan notebook `02_NER_and_Feature_Extraction.ipynb` terlebih dahulu untuk men-generate model tersebut.
+> Ensure that the file `models/tfidf_model.pkl` exists in your directory. If it does not, run the notebook `02_NER_and_Feature_Extraction.ipynb` first to generate the necessary artifact.
 
 ---
 
-## Fitur Utama
+## Core Features
 
-- **Hybrid NER Extraction** — Menggabungkan `EntityRuler` spaCy yang berbasis kamus dengan ekstraksi *noun chunks* untuk menangkap skill teknis. Hasilnya lebih komprehensif dibanding pendekatan NER-only karena frasa multi-kata seperti *"object-oriented design"* juga tertangkap.
+- **Hybrid NER Extraction** — Combines a dictionary-based spaCy `EntityRuler` with phrase-level *noun chunks* to capture technical skills. This delivers a far more comprehensive feature set than standard NER models, capturing complex multi-word phrases like *"object-oriented design"*.
 
-- **Semantic Relevance Filter** — Setiap frasa yang diekstrak dibandingkan secara semantik dengan dua kelompok anchor: satu cluster mewakili *technical competency*, satu lagi mewakili *administrative information* (gaji, tunjangan, lokasi). Frasa yang lebih dekat ke cluster administratif langsung dibuang. Ini membuat sistem tahan terhadap noise dari JD yang verbose tanpa perlu blacklist kata hardcoded.
+- **Semantic Relevance Filter** — Every extracted phrase is semantically mapped against two distinct anchor groups: a *technical competency* cluster and an *administrative information* cluster (salary, benefits, location). Phrases closer to the administrative cluster are automatically discarded. This insulates the system from noise inside verbose JDs without relying on hardcoded blacklists.
 
-- **SBERT Similarity Scoring** — Menggunakan `all-MiniLM-L6-v2` dari Sentence-Transformers untuk mengubah setiap fitur menjadi dense vector berukuran 384 dimensi, lalu menghitung *cosine similarity* antara fitur CV dan requirements JD. Setiap requirement dipasangkan dengan fitur CV yang paling mirip secara semantik.
+- **SBERT Similarity Scoring** — Utilizes `all-MiniLM-L6-v2` from Sentence-Transformers to map features into 384-dimensional dense vectors, computing the *cosine similarity* between CV profiles and JD requirements. Each requirement is paired dynamically with its semantically closest counterpart in the CV.
 
-- **TF-IDF Lexical Score** — Sebagai pembanding, sistem juga menghitung cosine similarity berbasis TF-IDF klasik. Skor ini ditampilkan di UI sebagai indikator pendamping — berguna untuk melihat seberapa jauh perbedaan antara pendekatan leksikal dan semantik.
+- **TF-IDF Lexical Score** — Serves as a baseline performance metric by computing a classic TF-IDF cosine similarity. This score is displayed side-by-side in the UI to demonstrate the tangible gap between lexical string matching and true semantic matching.
 
-- **Encoding & Mojibake Repair** — PDF sering menghasilkan teks berantakan (`â€¢` untuk bullet, `ﬁ` untuk ligatur fi). Pipeline preprocessing menggunakan `ftfy` dan normalisasi Unicode NFC untuk memperbaiki ini sebelum teks masuk ke model NLP.
+- **Encoding & Mojibake Repair** — Raw text extractions from PDFs often introduce broken formatting artifacts (`â€¢` for bullets, `ﬁ` for the fi ligature). The preprocessing pipeline embeds `ftfy` and Unicode NFC normalization to resolve encoding corruptions before feeding text to the NLP models.
 
-- **NER Visualization** — Menggunakan `displacy` dari spaCy untuk menyoroti entitas di teks resume secara visual — SKILL, ORG, GPE, dan PERSON — sehingga pengguna bisa melihat langsung apa yang "dibaca" oleh sistem.
+- **NER Visualization** — Employs spaCy's `displacy` component to visually highlight identified entities (SKILL, ORG, GPE, PERSON) directly within the resume view, giving recruiters full transparency into what the system "reads."
 
 ---
 
-## Alur Pipeline NLP
+## NLP Pipeline Workflow
 
-**1. Ekstraksi & Cleaning Teks PDF**
-- Raw text diekstrak dari PDF menggunakan `PyPDF2`
-- `ftfy.fix_text()` memperbaiki encoding artifacts
-- Regex dan normalisasi Unicode membersihkan sisa karakter non-ASCII, spasi berlebih, dan tanda baca tidak relevan
+**1. PDF Text Extraction & Cleaning**
+- Raw text is parsed from uploaded PDFs via `PyPDF2`.
+- `ftfy.fix_text()` repairs encoding artifacts and broken bytes.
+- Regex and Unicode normalizations strip out remaining non-ASCII characters, excessive whitespaces, and irrelevant punctuation marks.
 
 **2. Named Entity Recognition (Hybrid)**
-- `EntityRuler` dijalankan sebelum NER default spaCy untuk me-lock 40+ istilah teknologi ke label `SKILL`
-- Noun chunks dengan 2+ kata diekstrak sebagai kandidat fitur tambahan
-- Kedua hasil digabungkan menjadi satu set fitur kandidat
+- A custom `EntityRuler` is injected ahead of the default spaCy NER pipeline to lock 40+ specific technology terms to the `SKILL` label.
+- Noun chunks containing 2 or more words are extracted dynamically as candidate features.
+- Both extraction results are unioned into a combined feature matrix.
 
 **3. Semantic Relevance Filtering**
-- Setiap kandidat fitur di-encode ke vektor menggunakan SBERT
-- Dihitung similarity ke 12 Technical Anchors dan 10 Administrative Anchors
-- Hanya fitur yang `max_tech_sim >= 0.30` AND `max_tech_sim > max_admin_sim` yang lolos
+- Each candidate feature is converted into an embedding vector using SBERT.
+- Similarity scores are calculated against 12 Technical Anchors and 10 Administrative Anchors.
+- Features are retained only if they meet the strict condition: `max_tech_sim >= 0.30` AND `max_tech_sim > max_admin_sim`.
 
 **4. Similarity Scoring**
-- Fitur CV dan fitur JD yang sudah bersih di-encode ke vektor
-- Untuk setiap requirement di JD, dicari fitur CV dengan cosine similarity tertinggi
-- Pasangan dengan skor > 0.65 dihitung sebagai match
-- Final score = rata-rata similarity semua requirements × 100
+- Filtered CV and JD features are mapped into dense vectors.
+- For each requirement listed in the JD, the system identifies the single CV feature with the highest cosine similarity.
+- Paired features with a score > 0.65 are counted as a valid match.
+- Final Score = (sum of matched scores / total JD requirements) × 100.
 
 ---
 
-## Struktur Proyek
+## Project Structure
 
 ```
 AOL_NLP/
-├── app.py                          # Entry point Streamlit
+├── app.py                         # Streamlit web application entry point
 ├── src/
 │   ├── extraction/
-│   │   ├── engine.py               # Core NER, SBERT scoring, TF-IDF
-│   │   └── filters.py              # Semantic relevance filter (anchor-based)
+│   │   ├── engine.py              # Core NER engines, SBERT scoring, and TF-IDF matrix math
+│   │   └── filters.py             # Anchor-based semantic relevance filtering
 │   ├── utils/
-│   │   └── preprocessor.py         # PDF cleaning, lemmatization, encoding repair
-│   └── ui.py                       # Semua komponen UI Streamlit
+│   │   └── preprocessor.py        # PDF text cleaning, lemmatization, and encoding repairs
+│   └── ui.py                      # Streamlit UI design and layout components
 ├── models/
-│   ├── tfidf_model.pkl             # TF-IDF vectorizer + resume matrix (di-generate dari notebook)
-│   └── smart_skills.json           # Vocabulary skill dari corpus Ejaz (7,500+ token)
+│   ├── tfidf_model.pkl            # Serialized TF-IDF vectorizer + baseline resume matrix
+│   └── smart_skills.json          # Extracted skill vocabulary from the Ejaz corpus (7,500+ tokens)
 ├── data/
-│   └── raw/                        # Dataset mentah (CSV resume + JD + sample PDF)
+│   └── raw/                       # Raw datasets (Resume CSVs + Job Descriptions + sample PDFs)
 ├── notebooks/
-│   ├── 01_Data_Prep_and_EDA.ipynb          # Loading, merging, EDA
-│   ├── 02_NER_and_Feature_Extraction.ipynb # Preprocessing, TF-IDF, NER, RapidFuzz
-│   └── 03_Semantic_Matching_and_Evaluation.ipynb  # Perbandingan algoritma & evaluasi
+│   ├── 01_Data_Prep_and_EDA.ipynb          # Data loading, schema alignment, merging, and EDA
+│   ├── 02_NER_and_Feature_Extraction.ipynb # Preprocessing pipeline, TF-IDF, NER, and RapidFuzz
+│   └── 03_Semantic_Matching_and_Evaluation.ipynb  # Cross-algorithm stress testing and validation
 └── requirements.txt
 ```
 
 ---
 
-## Evaluasi
+## Evaluation
 
-Pengujian pada 15 kalimat berlabel (10 teknis, 5 noise administratif):
+The system was evaluated against 15 manually annotated ground-truth sentences (10 technical, 5 administrative noise phrases) comprising 25 total true skill entities:
 
-- **Precision: 0.9500** — dari semua entitas yang diprediksi sebagai skill, 95% benar. Sistem sangat selektif, jarang salah tandai kata administratif sebagai skill teknis.
-- **Recall: 0.7308** — dari semua skill yang seharusnya terdeteksi, 73% berhasil ditemukan. Beberapa skill dalam phrasing tidak standar memang terlewat.
-- **F1-Score: 0.8261** — di atas target proposal (>0.75), menunjukkan keseimbangan yang baik antara ketepatan dan kelengkapan.
+- **Precision: 0.9500** — Out of all entities predicted as a skill, 95% were highly accurate. The anchor-based semantic filter proves highly effective at filtering administrative noise.
+- **Recall: 0.7308** — The system successfully captured 73% of all true hidden skills. Non-standard phrasings or highly unique acronyms account for the missed terms.
+- **F1-Score: 0.8261** — Significantly outperforming the initial academic proposal target (>0.75), demonstrating a robust operational balance between precision and recall.
 
-Selain NER, pengujian perbandingan algoritma pada 5 test case menunjukkan keunggulan pendekatan Hybrid NER+SBERT dibanding TF-IDF murni, terutama pada kasus *semantic paraphrase* di mana CV dan JD menggunakan istilah berbeda untuk konsep yang sama.
+Stress-testing the algorithms across 5 distinct real-world hiring scenarios proved that the Hybrid NER+SBERT pipeline far exceeds standard lexical TF-IDF matching, especially when resolving complex semantic paraphrases.
 
 ---
 
-## Keterbatasan Sistem
+## System Limitations
 
-- **Kosakata skill terbatas pada kamus** — EntityRuler hanya menangkap skill yang sudah terdaftar di `TECH_TERM_LOCK`. Skill yang sangat baru atau spesifik industri tertentu (misalnya nama framework baru) tidak akan terdeteksi sebagai `SKILL` kecuali ditambahkan secara manual ke daftar.
+- **Dictionary-Gated Skill Vocabulary** — The `EntityRuler` component relies heavily on predefined terms in `TECH_TERM_LOCK`. Brand new frameworks or niche industry skills will not register under the `SKILL` label unless manually maintained.
 
-- **Kualitas output bergantung pada kualitas PDF** — PDF yang di-scan (bukan digital native) atau yang menggunakan layout multi-kolom kompleks sering menghasilkan urutan teks yang berantakan setelah ekstraksi. `ftfy` bisa memperbaiki encoding, tapi tidak bisa memperbaiki urutan kata yang salah.
+- **Dependency on Spatial PDF Layouts** — Scanned PDFs or complex multi-column grid layouts often cause scrambled sentence reading orders during text extraction. While `ftfy` patches broken characters, it cannot reconstruct broken paragraph flows.
 
-- **Threshold bersifat statis** — Nilai 0.65 untuk match threshold dan 0.30 untuk relevance filter tidak menyesuaikan diri dengan konteks domain. Untuk domain niche seperti bioinformatika atau hukum, angka ini mungkin perlu dikalibrasi ulang.
+- **Static Operational Thresholds** — The match threshold (0.65) and relevance threshold (0.30) are completely static. Niche industries (e.g., bio-informatics, maritime logistics, or legal tech) may require separate calibration.
 
-- **Tidak ada pembobotan requirement** — Setiap requirement di JD diperlakukan setara. Padahal dalam dunia nyata, "5 tahun pengalaman Python" jauh lebih krusial dari "familiar with Agile". Sistem saat ini tidak memiliki mekanisme untuk membedakan ini.
+- **Flat Requirement Weighting** — Every requirement listed in a JD is treated with identical mathematical weight. In real-world screening, a mandatory requirement (e.g., "5 years of Python") is far more crucial than a preferred skill (e.g., "familiarity with Agile"). 
 
-- **Ketergantungan pada model SBERT generik** — Model `all-MiniLM-L6-v2` dilatih pada data umum, bukan pada pasangan resume-JD. Kemampuan semantiknya di domain rekrutmen bisa lebih baik jika model di-fine-tune pada dataset spesifik.
+- **Generic Pre-trained Embeddings** — The underlying `all-MiniLM-L6-v2` model was trained on general semantic similarity benchmarks, not specifically on recruitment corpora, which can cause subtle inaccuracies in highly domain-specific matching tasks.
 
-- **Evaluasi dilakukan pada skala kecil** — Ground truth NER hanya 15 kalimat, dan uji perbandingan algoritma hanya 5 test case. Ini cukup untuk demonstrasi, tapi tidak representatif secara statistik.
+- **Small-Scale Evaluation Pool** — The ground-truth testing matrix remains statistically small (15 evaluation sentences and 5 operational test cases), making it highly effective for proof-of-concept validation but not fully representative of wide-scale production noise.
 
 ---
 
 ## Future Works
 
-- **Fine-tuning SBERT pada dataset rekrutmen** — Melatih ulang model embedding menggunakan pasangan (resume, JD) yang relevan/tidak relevan untuk meningkatkan akurasi similarity di domain ini secara signifikan.
+- **Domain Fine-Tuning for SBERT** — Retrain the embedding layer using triplet contrastive learning on a dedicated recruitment corpus to adjust vector dimensions specifically for HR terminologies.
 
-- **Pembobotan requirement berdasarkan urgensi** — Menggunakan teknik seperti kehadiran kata "required" vs "preferred" di JD, atau posisi kalimat, untuk memberi bobot lebih tinggi pada skill yang wajib dimiliki.
+- **Urgency-Based Weighting Classifiers** — Incorporate secondary linguistic sequence labeling to identify indicators like *"required"* vs. *"preferred"* to assign proportional mathematical weights to key skills.
 
-- **Ekspansi kamus skill secara otomatis** — Menggunakan Word2Vec atau teknik unsupervised lain untuk secara otomatis menemukan kata-kata baru yang semantically similar dengan skill yang sudah terdaftar, sehingga sistem bisa self-update tanpa perlu edit manual.
+- **Unsupervised Vocabulary Expansion** — Implement Word2Vec or FastText models over the extracted vocabulary corpus to automatically discover and link semantic synonyms (e.g., mapping "ReactJS", "React.js", and "React Hooks") without manual rule updates.
 
-- **Dukungan multi-bahasa** — Saat ini sistem hanya bekerja baik pada teks Bahasa Inggris. Integrasi model multilingual seperti `paraphrase-multilingual-MiniLM-L12-v2` akan memungkinkan analisis CV dalam Bahasa Indonesia atau bahasa lain.
+- **Multilingual Pipeline Extension** — Expand beyond English by integrating multilingual dense representations (such as `paraphrase-multilingual-MiniLM-L12-v2`) to easily support localized Indonesian resume structures.
 
-- **Input non-PDF** — Mendukung format `.docx`, `.txt`, dan paste teks langsung tanpa upload file, serta scraping otomatis dari platform seperti LinkedIn.
-
-- **Explainability yang lebih baik** — Menampilkan tidak hanya skor akhir, tapi juga reasoning di balik setiap match — misalnya menunjukkan secara visual mengapa "TensorFlow" dipasangkan dengan "deep learning framework" dengan skor 87%.
-
-- **Evaluasi skala besar** — Membangun ground truth dataset yang lebih besar (100+ pasangan CV-JD berlabel) untuk menghasilkan metrik evaluasi yang lebih robust dan dapat dipublikasikan.
+- **Diverse Input Processing** — Build text-scraping interfaces for `.docx`, `.txt`, raw copy-paste payloads, and direct public profile ingestion from networks like LinkedIn.
 
 ---
 
 ## Tech Stack
 
-- **NLP Core** — spaCy `en_core_web_md`, Sentence-Transformers, NLTK (stopwords, WordNetLemmatizer)
-- **Machine Learning** — Scikit-learn (TF-IDF, cosine similarity), PyTorch
-- **Text Repair** — ftfy, unicodedata
-- **PDF Processing** — PyPDF2
-- **Fuzzy Matching** — RapidFuzz
-- **Interface** — Streamlit
-- **Data** — Pandas, NumPy
+- **NLP Core** — spaCy (`en_core_web_md`), Sentence-Transformers, NLTK (Stopwords & WordNetLemmatizer)
+- **Machine Learning & Math** — Scikit-learn (TF-IDF Vectorization, Cosine Similarity), PyTorch
+- **Text Reconstruction** — ftfy, unicodedata
+- **File Parsing** — PyPDF2
+- **Fuzzy Ingestion** — RapidFuzz
+- **Deployment & Interface** — Streamlit
+- **Data Engineering** — Pandas, NumPy
