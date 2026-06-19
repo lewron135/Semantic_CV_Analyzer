@@ -244,24 +244,34 @@ def render_analyzer_inputs() -> tuple:
 def render_score(score: float, tfidf_score: float | None) -> None:
     label = "Strong fit" if score >= 70 else "Moderate fit" if score >= 45 else "Weak fit"
     pct = min(score, 100)
+    r, cx, cy = 54, 70, 70
+    circ = 2 * 3.14159 * r
+    dash_filled = circ * pct / 100
+    dash_empty = circ - dash_filled
+    offset = circ * 0.25  # start arc from 12 o'clock
+
     tfidf_line = ""
     if tfidf_score is not None:
-        tfidf_line = f'<p class="tfidf-score" style="font-family:\'DM Mono\',monospace; font-size:0.75rem; color:#a39a86; margin:6px 0 0;">TF-IDF Lexical Score: {tfidf_score:.3f}</p>'
-    st.markdown(f"""
-    <div style="background:#fff; border:1px solid #e4e0d8; border-radius:16px; padding:32px 28px; display:flex; align-items:center; gap:28px; margin:24px 0; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-        <div style="width:140px; height:140px; flex:none; border-radius:50%; background:conic-gradient(#c8b560 {pct:.1f}%, #ece8dd 0); display:flex; align-items:center; justify-content:center;">
-            <div style="width:108px; height:108px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div style="font-family:'Instrument Serif',serif; font-size:3rem; line-height:1; color:#1a1a1a;">{score:.0f}</div>
-                <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.1em; margin-top:3px;">/ 100</div>
-            </div>
-        </div>
-        <div style="flex:1;">
-            <div style="font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.16em; text-transform:uppercase; color:#a39a86;">Match Score</div>
-            <div style="font-family:'Instrument Serif',serif; font-size:1.9rem; line-height:1.1; color:#1a1a1a; margin-top:6px;">{label}</div>
-            {tfidf_line}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        tfidf_line = f'<p style="font-family:DM Mono,monospace; font-size:0.75rem; color:#a39a86; margin:6px 0 0;">TF-IDF Lexical Score: {tfidf_score:.3f}</p>'
+
+    svg = (f'<svg width="140" height="140" viewBox="0 0 140 140" style="flex:none;overflow:visible;">'
+           f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#ece8dd" stroke-width="10"/>'
+           f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#c8b560" stroke-width="10"'
+           f' stroke-dasharray="{dash_filled:.1f} {dash_empty:.1f}" stroke-dashoffset="{offset:.1f}" stroke-linecap="round"/>'
+           f'<text x="{cx}" y="{cy - 4}" text-anchor="middle" font-family="Georgia,serif" font-size="38" fill="#1a1a1a">{score:.0f}</text>'
+           f'<text x="{cx}" y="{cy + 18}" text-anchor="middle" font-family="monospace" font-size="11" fill="#a39a86">/ 100</text>'
+           f'</svg>')
+    text_block = (f'<div style="flex:1;">'
+                  f'<div style="font-family:DM Mono,monospace;font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:#a39a86;">Match Score</div>'
+                  f'<div style="font-family:Georgia,serif;font-size:1.9rem;line-height:1.1;color:#1a1a1a;margin-top:6px;">{label}</div>'
+                  f'{tfidf_line}'
+                  f'</div>')
+    st.markdown(
+        f'<div style="background:#fff;border:1px solid #e4e0d8;border-radius:16px;padding:32px 28px;'
+        f'display:flex;align-items:center;gap:28px;margin:24px 0;box-shadow:0 1px 4px rgba(0,0,0,0.05);">'
+        f'{svg}{text_block}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def render_match_breakdown(details: list, cv_features: set, jd_features: set) -> None:
@@ -272,55 +282,50 @@ def render_match_breakdown(details: list, cv_features: set, jd_features: set) ->
     col_match, col_gap = st.columns(2, gap="large")
 
     with col_match:
+        strong_rows = "".join(
+            f'<div class="match-row"><span class="match-skill">{d["jd"]}</span>'
+            f'<span class="match-badge">{d["score"]:.0%}</span></div>'
+            for d in strong
+        ) if strong else '<p style="color:#a39a86; font-size:0.85rem; margin:0;">No strong matches found.</p>'
+
         st.markdown(f"""
         <div class="card card-accent-green">
             <div class="section-label">Strong Matches — {len(strong)}</div>
+            {strong_rows}
+        </div>
         """, unsafe_allow_html=True)
-        if strong:
-            for d in strong:
-                st.markdown(f"""
-                <div class="match-row">
-                    <span class="match-skill">{d['jd']}</span>
-                    <span class="match-badge">{d['score']:.0%}</span>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.markdown('<p style="color:#a39a86; font-size:0.85rem;">No strong matches found.</p>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
         if moderate:
+            moderate_rows = "".join(
+                f'<div class="match-row">'
+                f'<span style="color:#7a6e52; font-size:0.88rem;">{d["jd"]}</span>'
+                f'<span style="font-family:\'DM Mono\',monospace; font-size:0.62rem; background:#faf6ea; color:#97812a; border:1px solid #ece0c0; padding:2px 8px; border-radius:999px;">{d["score"]:.0%}</span>'
+                f'</div>'
+                for d in moderate
+            )
             st.markdown(f"""
-            <div class="card" style="margin-top:0;">
+            <div class="card">
                 <div class="section-label">Partial Matches — {len(moderate)}</div>
+                {moderate_rows}
+            </div>
             """, unsafe_allow_html=True)
-            for d in moderate:
-                st.markdown(f"""
-                <div class="match-row">
-                    <span style="color:#7a6e52; font-size:0.88rem;">{d['jd']}</span>
-                    <span style="font-family:'DM Mono',monospace; font-size:0.62rem; background:#faf6ea; color:#97812a; border:1px solid #ece0c0; padding:2px 8px; border-radius:999px;">{d['score']:.0%}</span>
-                </div>
-                """, unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
 
     with col_gap:
+        gap_rows = "".join(
+            f'<div class="match-row"><span class="gap-skill">{d["jd"]}</span>'
+            f'<span style="font-family:\'DM Mono\',monospace; font-size:0.62rem; color:#c8c0ac;">not found</span></div>'
+            for d in gaps
+        ) if gaps else '<p style="color:#1D9E75; font-size:0.85rem; margin:0;">No significant gaps detected.</p>'
+
         st.markdown(f"""
         <div class="card card-accent-red">
             <div class="section-label">Requirements Gap — {len(gaps)}</div>
+            {gap_rows}
+        </div>
         """, unsafe_allow_html=True)
-        if gaps:
-            for d in gaps:
-                st.markdown(f"""
-                <div class="match-row">
-                    <span class="gap-skill">{d['jd']}</span>
-                    <span style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#c8c0ac;">not found</span>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.markdown('<p style="color:#1D9E75; font-size:0.85rem;">No significant gaps detected.</p>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(f"""
-        <div class="card" style="margin-top:0;">
+        <div class="card">
             <div class="section-label">Extraction Stats</div>
             <div class="match-row">
                 <span style="color:#8a8474; font-size:0.85rem;">CV features (after filter)</span>

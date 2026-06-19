@@ -24,10 +24,10 @@ TECH_TERM_LOCK = [
 NER_OPTIONS = {
     "ents": ["SKILL", "ORG", "GPE", "PERSON"],
     "colors": {
-        "SKILL": "#2d4a1e",
-        "ORG": "#1e2d4a",
-        "GPE": "#3a2d1e",
-        "PERSON": "#2d1e3a",
+        "SKILL": "#c8f0d8",
+        "ORG": "#c8e0f8",
+        "GPE": "#fde8c0",
+        "PERSON": "#e8d0f8",
     },
 }
 
