@@ -6,210 +6,167 @@ _CSS = """
 
     html, body, [class*="css"] {
         font-family: 'DM Sans', sans-serif;
-        background-color: #0d0d0d;
-        color: #e8e4dd;
+        background-color: #f5f3ef;
+        color: #1a1a1a;
     }
+    ::selection { background: #c8b56044; }
     [data-testid="stSidebar"] {
-        background-color: #111111;
-        border-right: 1px solid #1e1e1e;
+        background-color: #e8e6e1;
+        border-right: 1px solid #dcd8cf;
     }
     [data-testid="stSidebar"] * { font-family: 'DM Sans', sans-serif !important; }
-    #MainMenu, footer, header { visibility: hidden; }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #0d0d0d; }
-    ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+    #MainMenu, footer { visibility: hidden; }
+    header { visibility: hidden; }
+    /* Show the sidebar re-open button even when header is hidden */
+    [data-testid="collapsedControl"] { visibility: visible !important; }
+    /* Hide the close-sidebar button so sidebar can't be accidentally closed */
+    [data-testid="stSidebarCollapseButton"] { display: none !important; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f5f3ef; }
+    ::-webkit-scrollbar-thumb { background: #d9d4c8; border-radius: 6px; border: 3px solid #f5f3ef; }
 
+    .page-eyebrow {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #a39a86;
+        margin-bottom: 0;
+    }
     .page-title {
         font-family: 'Instrument Serif', serif;
         font-size: 2.8rem;
         font-weight: 400;
-        color: #e8e4dd;
-        letter-spacing: -0.5px;
-        line-height: 1.1;
-        margin-bottom: 0.2rem;
+        color: #1a1a1a;
+        letter-spacing: -0.01em;
+        line-height: 1.04;
+        margin: 8px 0 0;
     }
     .page-subtitle {
-        font-family: 'DM Mono', monospace;
-        font-size: 0.7rem;
-        color: #4a4a4a;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-bottom: 2.5rem;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 1rem;
+        color: #5a564e;
+        line-height: 1.5;
+        margin: 10px 0 2rem;
+        max-width: 560px;
     }
     .section-label {
         font-family: 'DM Mono', monospace;
         font-size: 0.65rem;
-        letter-spacing: 2.5px;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
-        color: #555;
+        color: #a39a86;
         margin-bottom: 0.6rem;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid #1e1e1e;
+        border-bottom: 1px solid #e4e0d8;
     }
     .card {
-        background: #111111;
-        border: 1px solid #1e1e1e;
-        border-radius: 8px;
-        padding: 24px;
-        margin-bottom: 16px;
+        background: #fff;
+        border: 1px solid #e4e0d8;
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin-bottom: 14px;
     }
-    .card-accent-green { border-left: 3px solid #2d6a4f; }
-    .card-accent-red { border-left: 3px solid #6b2737; }
+    .card-accent-green { border-left: 3px solid #1D9E75; }
+    .card-accent-red { border-left: 3px solid #e07070; }
 
-    .score-block {
-        background: #111111;
-        border: 1px solid #1e1e1e;
-        border-radius: 8px;
-        padding: 48px 32px;
-        text-align: center;
-        margin: 24px 0;
-        position: relative;
-        overflow: hidden;
-    }
-    .score-block::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #c8b560, transparent);
-    }
-    .score-number {
-        font-family: 'Instrument Serif', serif;
-        font-size: 5.5rem;
-        font-weight: 400;
-        color: #c8b560;
-        line-height: 1;
-        margin: 0;
-    }
-    .score-unit {
-        font-family: 'DM Mono', monospace;
-        font-size: 0.65rem;
-        color: #555;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-top: 8px;
-    }
-    .tfidf-score {
-        font-family: 'DM Mono', monospace;
-        font-size: 0.8rem;
-        color: #444;
-        margin-top: 6px;
-    }
     .match-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 9px 0;
-        border-bottom: 1px solid #161616;
-        font-size: 0.85rem;
+        border-bottom: 1px solid #f0ede6;
+        font-size: 0.88rem;
     }
     .match-row:last-child { border-bottom: none; }
-    .match-skill { color: #c8b560; font-weight: 500; }
-    .match-cv { color: #555; font-size: 0.75rem; font-family: 'DM Mono', monospace; }
-    .gap-skill { color: #9a5a5a; font-weight: 400; }
+    .match-skill { color: #1a1a1a; font-weight: 500; }
+    .match-cv { color: #8a8474; font-size: 0.75rem; font-family: 'DM Mono', monospace; }
+    .gap-skill { color: #b05050; font-weight: 400; }
     .match-badge {
         font-family: 'DM Mono', monospace;
-        font-size: 0.65rem;
-        background: #1a2a1a;
-        color: #5a9a5a;
+        font-size: 0.62rem;
+        background: #e6f5ee;
+        color: #1D9E75;
         padding: 2px 8px;
-        border-radius: 3px;
+        border-radius: 999px;
         flex-shrink: 0;
+        border: 1px solid #cfe9dd;
     }
     .ner-container {
-        background: #111111;
-        border: 1px solid #1e1e1e;
-        border-radius: 8px;
-        padding: 24px;
+        background: #fff;
+        border: 1px solid #e4e0d8;
+        border-radius: 14px;
+        padding: 22px 24px;
         line-height: 2.4;
         font-size: 0.88rem;
-        color: #a0998f;
+        color: #3a372f;
     }
     .stButton > button {
         background: #c8b560 !important;
-        color: #0d0d0d !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.7rem !important;
-        font-weight: 500 !important;
-        letter-spacing: 2px !important;
-        text-transform: uppercase !important;
+        color: #332b0e !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 0.92rem !important;
+        font-weight: 600 !important;
         border: none !important;
-        border-radius: 6px !important;
+        border-radius: 11px !important;
         height: 48px !important;
         width: 100% !important;
         transition: opacity 0.2s ease !important;
     }
-    .stButton > button:hover { opacity: 0.85 !important; transform: none !important; box-shadow: none !important; }
+    .stButton > button:hover { opacity: 0.88 !important; transform: none !important; box-shadow: none !important; }
     [data-testid="stFileUploaderDropzone"] {
-        background: #111111 !important;
-        border: 1px dashed #2a2a2a !important;
-        border-radius: 8px !important;
+        background: #faf8f2 !important;
+        border: 1.5px dashed #cfc9ba !important;
+        border-radius: 12px !important;
     }
     textarea {
-        background: #111111 !important;
-        border: 1px solid #1e1e1e !important;
-        border-radius: 6px !important;
-        color: #e8e4dd !important;
+        background: #fff !important;
+        border: 1px solid #e4e0d8 !important;
+        border-radius: 10px !important;
+        color: #1a1a1a !important;
         font-family: 'DM Sans', sans-serif !important;
         font-size: 0.88rem !important;
     }
     textarea:focus { border-color: #c8b560 !important; box-shadow: none !important; }
-    .nav-item {
-        display: block;
-        padding: 10px 14px;
-        border-radius: 6px;
-        font-size: 0.82rem;
-        color: #555;
-        cursor: pointer;
-        margin-bottom: 4px;
-        transition: all 0.15s;
-        text-decoration: none;
-        letter-spacing: 0.3px;
-    }
-    .nav-item:hover, .nav-item.active { background: #1a1a1a; color: #e8e4dd; }
-    .nav-label {
-        font-family: 'DM Mono', monospace;
-        font-size: 0.6rem;
-        color: #333;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        padding: 0 14px;
-        margin-bottom: 8px;
-        margin-top: 20px;
-    }
-    hr { border: none; border-top: 1px solid #1a1a1a; margin: 20px 0; }
+    hr { border: none; border-top: 1px solid #dcd8cf; margin: 20px 0; }
     [data-testid="stSpinner"] { color: #c8b560 !important; }
     .metric-tag {
         display: inline-block;
         font-family: 'DM Mono', monospace;
         font-size: 0.65rem;
-        color: #555;
-        border: 1px solid #1e1e1e;
-        padding: 3px 10px;
-        border-radius: 20px;
-        margin-right: 8px;
+        color: #7a7466;
+        background: #f1eee7;
+        border: 1px solid #e6e1d6;
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-right: 7px;
         margin-bottom: 6px;
     }
     .badge-green {
         display: inline-block;
         font-family: 'DM Mono', monospace;
         font-size: 0.6rem;
-        background: #1a2a1a;
-        color: #5a9a5a;
+        background: #e6f5ee;
+        color: #137a59;
+        border: 1px solid #cfe9dd;
         padding: 3px 10px;
-        border-radius: 3px;
-        letter-spacing: 1px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
     }
     .badge-amber {
         display: inline-block;
         font-family: 'DM Mono', monospace;
         font-size: 0.6rem;
-        background: #2a2010;
-        color: #c8a030;
+        background: #faf6ea;
+        color: #97812a;
+        border: 1px solid #ece0c0;
         padding: 3px 10px;
-        border-radius: 3px;
-        letter-spacing: 1px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
     }
+    [data-testid="stProgressBar"] > div { background: #f0ede6 !important; border-radius: 999px !important; }
+    [data-testid="stProgressBar"] > div > div { background: linear-gradient(90deg, #c8b560, #bda849) !important; border-radius: 999px !important; }
+    .stAlert { border-radius: 10px !important; }
 </style>
 """
 
@@ -220,26 +177,26 @@ def inject_css() -> None:
 
 def render_sidebar(tfidf_available: bool) -> str:
     with st.sidebar:
-        st.markdown("""
-        <div style="padding: 24px 14px 16px 14px;">
-            <p style="font-family:'Instrument Serif',serif; font-size:1.4rem; color:#e8e4dd; margin:0; line-height:1.1;">
-                CV Analyzer
-            </p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#333; letter-spacing:3px; text-transform:uppercase; margin:4px 0 0 0;">
-                NLP Engine v4
-            </p>
-        </div>
-        <hr style="margin:0 0 8px 0; border-color:#1a1a1a;">
-        """, unsafe_allow_html=True)
-
         badge = (
-            '<span class="badge-green">TF-IDF artifact loaded</span>'
+            '<span class="badge-green">TF-IDF loaded</span>'
             if tfidf_available
             else '<span class="badge-amber">Run notebook to export TF-IDF</span>'
         )
-        st.markdown(f'<div style="padding: 0 14px 12px 14px;">{badge}</div>', unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="padding:24px 10px 16px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                <div style="width:34px; height:34px; border-radius:9px; background:#c8b560; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-weight:500; font-size:12px; color:#332b0e; flex:none;">CV</div>
+                <div>
+                    <div style="font-family:'Instrument Serif',serif; font-size:18px; line-height:1; color:#1a1a1a;">Smart CV</div>
+                    <div style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.14em; color:#9a9488; margin-top:3px;">ANALYZER</div>
+                </div>
+            </div>
+            <div style="margin-bottom:16px;">{badge}</div>
+        </div>
+        <div style="border-top:1px solid #dcd8cf; margin:0 0 8px;"></div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.16em; color:#a8a294; padding:12px 10px 8px;">MENU</div>
+        """, unsafe_allow_html=True)
 
-        st.markdown('<div class="nav-label">Navigation</div>', unsafe_allow_html=True)
         page = st.radio(
             "",
             options=["Overview", "Analyzer", "Candidate Ranking", "System Evaluation"],
@@ -247,10 +204,13 @@ def render_sidebar(tfidf_available: bool) -> str:
         )
 
         st.markdown("""
-        <hr style="margin-top:auto;">
-        <div style="padding: 0 14px 24px 14px;">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#2a2a2a; letter-spacing:1px; margin:0;">
-                BINUS UNIVERSITY<br>COMP6885001 — NLP<br>2025/2026
+        <div style="border-top:1px solid #dcd8cf; margin-top:auto; padding:16px 10px 8px; display:flex; align-items:center; gap:8px;">
+            <span style="width:7px; height:7px; border-radius:50%; background:#1D9E75; flex:none;"></span>
+            <span style="font-family:'DM Mono',monospace; font-size:10px; color:#9a9488; letter-spacing:0.04em;">spaCy + SBERT · BINUS NLP</span>
+        </div>
+        <div style="padding:0 10px 20px;">
+            <p style="font-family:'DM Mono',monospace; font-size:9px; color:#c8c0ac; letter-spacing:1px; margin:0;">
+                COMP6885001 — 2025/2026
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -259,12 +219,13 @@ def render_sidebar(tfidf_available: bool) -> str:
 
 
 def render_analyzer_inputs() -> tuple:
-    st.markdown('<p class="page-title">CV Analyzer</p>', unsafe_allow_html=True)
-    st.markdown('<p class="page-subtitle">Upload a resume and enter job requirements</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-eyebrow">Analyzer</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-title">Analyze a résumé</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-subtitle">Upload a candidate PDF and paste a job description to score the match.</p>', unsafe_allow_html=True)
 
     col_left, col_right = st.columns([1, 1.4], gap="large")
     with col_left:
-        st.markdown('<div class="section-label">Resume — PDF</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-label">Résumé — PDF</div>', unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Drop PDF here", type=["pdf"], label_visibility="collapsed")
     with col_right:
         st.markdown('<div class="section-label">Job Requirements</div>', unsafe_allow_html=True)
@@ -276,20 +237,29 @@ def render_analyzer_inputs() -> tuple:
         )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    run_clicked = st.button("Run Analysis")
+    run_clicked = st.button("Analyze résumé")
     return uploaded_file, jd_text, run_clicked
 
 
 def render_score(score: float, tfidf_score: float | None) -> None:
-    label = "Strong Match" if score >= 70 else "Moderate Match" if score >= 45 else "Weak Match"
+    label = "Strong fit" if score >= 70 else "Moderate fit" if score >= 45 else "Weak fit"
+    pct = min(score, 100)
     tfidf_line = ""
     if tfidf_score is not None:
-        tfidf_line = f'<p class="tfidf-score">TF-IDF Lexical Score: {tfidf_score:.3f}</p>'
+        tfidf_line = f'<p class="tfidf-score" style="font-family:\'DM Mono\',monospace; font-size:0.75rem; color:#a39a86; margin:6px 0 0;">TF-IDF Lexical Score: {tfidf_score:.3f}</p>'
     st.markdown(f"""
-    <div class="score-block">
-        <p class="score-number">{score:.1f}<span style="font-size:2rem; color:#555;">%</span></p>
-        <p class="score-unit">Semantic Match Score — {label}</p>
-        {tfidf_line}
+    <div style="background:#fff; border:1px solid #e4e0d8; border-radius:16px; padding:32px 28px; display:flex; align-items:center; gap:28px; margin:24px 0; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+        <div style="width:140px; height:140px; flex:none; border-radius:50%; background:conic-gradient(#c8b560 {pct:.1f}%, #ece8dd 0); display:flex; align-items:center; justify-content:center;">
+            <div style="width:108px; height:108px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="font-family:'Instrument Serif',serif; font-size:3rem; line-height:1; color:#1a1a1a;">{score:.0f}</div>
+                <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.1em; margin-top:3px;">/ 100</div>
+            </div>
+        </div>
+        <div style="flex:1;">
+            <div style="font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.16em; text-transform:uppercase; color:#a39a86;">Match Score</div>
+            <div style="font-family:'Instrument Serif',serif; font-size:1.9rem; line-height:1.1; color:#1a1a1a; margin-top:6px;">{label}</div>
+            {tfidf_line}
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -315,7 +285,7 @@ def render_match_breakdown(details: list, cv_features: set, jd_features: set) ->
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.markdown('<p style="color:#333; font-size:0.85rem;">No strong matches found.</p>', unsafe_allow_html=True)
+            st.markdown('<p style="color:#a39a86; font-size:0.85rem;">No strong matches found.</p>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
         if moderate:
@@ -326,8 +296,8 @@ def render_match_breakdown(details: list, cv_features: set, jd_features: set) ->
             for d in moderate:
                 st.markdown(f"""
                 <div class="match-row">
-                    <span style="color:#8a8060; font-size:0.85rem;">{d['jd']}</span>
-                    <span class="match-badge" style="background:#1a1a0a; color:#8a8060;">{d['score']:.0%}</span>
+                    <span style="color:#7a6e52; font-size:0.88rem;">{d['jd']}</span>
+                    <span style="font-family:'DM Mono',monospace; font-size:0.62rem; background:#faf6ea; color:#97812a; border:1px solid #ece0c0; padding:2px 8px; border-radius:999px;">{d['score']:.0%}</span>
                 </div>
                 """, unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
@@ -342,27 +312,27 @@ def render_match_breakdown(details: list, cv_features: set, jd_features: set) ->
                 st.markdown(f"""
                 <div class="match-row">
                     <span class="gap-skill">{d['jd']}</span>
-                    <span style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#3a3a3a;">not found</span>
+                    <span style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#c8c0ac;">not found</span>
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.markdown('<p style="color:#2d6a4f; font-size:0.85rem;">No significant gaps detected.</p>', unsafe_allow_html=True)
+            st.markdown('<p style="color:#1D9E75; font-size:0.85rem;">No significant gaps detected.</p>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(f"""
         <div class="card" style="margin-top:0;">
             <div class="section-label">Extraction Stats</div>
             <div class="match-row">
-                <span style="color:#555; font-size:0.85rem;">CV features (after filter)</span>
-                <span style="color:#e8e4dd; font-family:'DM Mono',monospace; font-size:0.8rem;">{len(cv_features)}</span>
+                <span style="color:#8a8474; font-size:0.85rem;">CV features (after filter)</span>
+                <span style="color:#1a1a1a; font-family:'DM Mono',monospace; font-size:0.8rem;">{len(cv_features)}</span>
             </div>
             <div class="match-row">
-                <span style="color:#555; font-size:0.85rem;">JD requirements (after filter)</span>
-                <span style="color:#e8e4dd; font-family:'DM Mono',monospace; font-size:0.8rem;">{len(jd_features)}</span>
+                <span style="color:#8a8474; font-size:0.85rem;">JD requirements (after filter)</span>
+                <span style="color:#1a1a1a; font-family:'DM Mono',monospace; font-size:0.8rem;">{len(jd_features)}</span>
             </div>
             <div class="match-row">
-                <span style="color:#555; font-size:0.85rem;">Requirements evaluated</span>
-                <span style="color:#e8e4dd; font-family:'DM Mono',monospace; font-size:0.8rem;">{len(details)}</span>
+                <span style="color:#8a8474; font-size:0.85rem;">Requirements evaluated</span>
+                <span style="color:#1a1a1a; font-family:'DM Mono',monospace; font-size:0.8rem;">{len(details)}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -375,55 +345,103 @@ def render_ner_section(ner_html: str) -> None:
 
 
 def render_methodology() -> None:
-    st.markdown('<p class="page-title">Overview</p>', unsafe_allow_html=True)
-    st.markdown('<p class="page-subtitle">How this system works</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-eyebrow">Overview</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-title">Smart CV Analyzer</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-subtitle">A semantic résumé-to-role matching engine — reads meaning, not keywords, to score fit and surface the skills that matter.</p>', unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class="card">
-        <div class="section-label">Architecture</div>
-        <p style="color:#7a7a7a; font-size:0.9rem; line-height:1.8; margin:0;">
-            This system combines two NLP components: <strong style="color:#e8e4dd;">spaCy</strong>
-            for named entity recognition and noun phrase extraction,
-            and <strong style="color:#e8e4dd;">Sentence-BERT (SBERT)</strong> for computing
-            semantic similarity between extracted features and job requirements.
-            Unlike traditional keyword matching, this architecture understands
-            the conceptual meaning behind terms rather than relying on exact string matches.
-        </p>
-    </div>
-    <div class="card">
-        <div class="section-label">Semantic Relevance Filtering</div>
-        <p style="color:#7a7a7a; font-size:0.9rem; line-height:1.8; margin:0;">
-            Raw noun phrase extraction produces significant noise — administrative terms such as
-            <em>paid time off</em>, <em>health insurance</em>, and <em>office location</em>
-            get captured alongside genuine technical skills. This system resolves that by
-            encoding both candidate entities and a set of <strong style="color:#e8e4dd;">
-            semantic anchor phrases</strong> (representing "technical competency" and
-            "administrative information") into vector space, then filtering out anything
-            that is semantically closer to the administrative cluster than the technical one.
-            No hardcoded blacklists — the filter generalizes automatically.
-        </p>
-    </div>
-    <div class="card">
-        <div class="section-label">Scoring Method</div>
-        <p style="color:#7a7a7a; font-size:0.9rem; line-height:1.8; margin:0;">
-            Each requirement extracted from the job description is compared against all
-            CV features using <strong style="color:#e8e4dd;">cosine similarity</strong>.
-            The best-matching CV feature is paired with each requirement.
-            A match is counted when similarity exceeds 0.65 (65%).
-            The final score is the mean similarity across all requirements, scaled to 100.
-        </p>
-    </div>
-    <div class="card">
-        <div class="section-label">Evaluation Metrics</div>
-        <div style="margin-top:12px;">
-            <span class="metric-tag">Cosine Similarity</span>
-            <span class="metric-tag">Named Entity Recognition</span>
-            <span class="metric-tag">Noun Phrase Chunking</span>
-            <span class="metric-tag">Sentence Transformers</span>
-            <span class="metric-tag">Semantic Vector Space</span>
+    col1, col2 = st.columns(2, gap="large")
+
+    with col1:
+        st.markdown("""
+        <div style="background:#fff; border:1px solid #e4e0d8; border-radius:16px; padding:26px; margin-bottom:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                <div style="width:42px; height:42px; border-radius:11px; background:#f6f2e0; display:flex; align-items:center; justify-content:center; color:#b39a3a;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 12.5 12 17l9-4.5"/><path d="M3 17 12 21.5 21 17"/></svg>
+                </div>
+                <span style="font-family:'Instrument Serif',serif; font-size:28px; color:#e3ddcc;">01</span>
+            </div>
+            <div style="font-family:'DM Sans',sans-serif; font-weight:600; font-size:17px; color:#1a1a1a;">Architecture</div>
+            <div style="font-family:'DM Mono',monospace; font-size:11px; color:#a39a86; margin-top:3px; letter-spacing:0.03em;">spaCy + SBERT pipeline</div>
+            <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">spaCy NER for entity &amp; skill extraction</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">SBERT sentence embeddings</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Cosine similarity scoring</span></div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:16px;">
+                <span class="metric-tag">spaCy</span>
+                <span class="metric-tag">SBERT</span>
+                <span class="metric-tag">PyTorch</span>
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div style="background:#fff; border:1px solid #e4e0d8; border-radius:16px; padding:26px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                <div style="width:42px; height:42px; border-radius:11px; background:#e6f5ee; display:flex; align-items:center; justify-content:center; color:#1D9E75;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+                </div>
+                <span style="font-family:'Instrument Serif',serif; font-size:28px; color:#e3ddcc;">03</span>
+            </div>
+            <div style="font-family:'DM Sans',sans-serif; font-weight:600; font-size:17px; color:#1a1a1a;">Scoring Method</div>
+            <div style="font-family:'DM Mono',monospace; font-size:11px; color:#a39a86; margin-top:3px; letter-spacing:0.03em;">per-requirement cosine similarity</div>
+            <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Each JD requirement vs. all CV features</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Match threshold: 65% similarity</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Final score = mean similarity × 100</span></div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:16px;">
+                <span class="metric-tag">Cosine Similarity</span>
+                <span class="metric-tag">Vector Space</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div style="background:#fff; border:1px solid #e4e0d8; border-radius:16px; padding:26px; margin-bottom:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                <div style="width:42px; height:42px; border-radius:11px; background:#e7f0fb; display:flex; align-items:center; justify-content:center; color:#378ADD;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z"/></svg>
+                </div>
+                <span style="font-family:'Instrument Serif',serif; font-size:28px; color:#e3ddcc;">02</span>
+            </div>
+            <div style="font-family:'DM Sans',sans-serif; font-weight:600; font-size:17px; color:#1a1a1a;">Semantic Filtering</div>
+            <div style="font-family:'DM Mono',monospace; font-size:11px; color:#a39a86; margin-top:3px; letter-spacing:0.03em;">meaning over keywords</div>
+            <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Semantic anchor phrases filter noise</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Removes admin terms automatically</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#c8b560; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">No hardcoded blacklists</span></div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:16px;">
+                <span class="metric-tag">Embeddings</span>
+                <span class="metric-tag">NER</span>
+                <span class="metric-tag">Noun Phrases</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div style="background:#fff; border:1px solid #e4e0d8; border-radius:16px; padding:26px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                <div style="width:42px; height:42px; border-radius:11px; background:#f1eee7; display:flex; align-items:center; justify-content:center; color:#97812a;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="3,17 9,11 13,14 21,5"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+                </div>
+                <span style="font-family:'Instrument Serif',serif; font-size:28px; color:#e3ddcc;">04</span>
+            </div>
+            <div style="font-family:'DM Sans',sans-serif; font-weight:600; font-size:17px; color:#1a1a1a;">Evaluation Results</div>
+            <div style="font-family:'DM Mono',monospace; font-size:11px; color:#a39a86; margin-top:3px; letter-spacing:0.03em;">exceeds F1 ≥ 0.75 target</div>
+            <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#1D9E75; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Precision 0.9524 · Recall 0.80</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#1D9E75; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;"><strong style="color:#1a1a1a;">F1 = 0.8696</strong> (+11.9pp above target)</span></div>
+                <div style="display:flex; gap:10px; align-items:flex-start;"><span style="width:5px; height:5px; border-radius:50%; background:#1D9E75; margin-top:7px; flex:none;"></span><span style="font-size:13.5px; line-height:1.45; color:#5a564e;">Hybrid accuracy: 4/5 test cases</span></div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:16px;">
+                <span class="metric-tag">Sentence Transformers</span>
+                <span class="metric-tag">mpnet-base-v2</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 def render_candidate_ranking(nlp, sbert_model, tfidf_vectorizer) -> None:
@@ -434,14 +452,15 @@ def render_candidate_ranking(nlp, sbert_model, tfidf_vectorizer) -> None:
     GREEN = "#1D9E75"
     BLUE = "#378ADD"
     GRAY = "#888780"
-    _card_base = "background:#111111; border:1px solid #1e1e1e; border-radius:8px; padding:20px 16px; text-align:center;"
+    _card_base = "background:#fff; border:1px solid #e4e0d8; border-radius:14px; padding:20px 18px; text-align:center;"
 
-    st.markdown('<p class="page-title">Candidate Ranking</p>', unsafe_allow_html=True)
-    st.markdown('<p class="page-subtitle">Upload multiple resumes and rank by semantic match</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-eyebrow">Candidate Ranking</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-title">Compare candidates</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-subtitle">Score multiple résumés against one role and rank them on a single leaderboard.</p>', unsafe_allow_html=True)
 
     col_left, col_right = st.columns([1, 1.4], gap="large")
     with col_left:
-        st.markdown('<div class="section-label">Resumes — Multiple PDFs</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-label">Résumés — Multiple PDFs</div>', unsafe_allow_html=True)
         uploaded_files = st.file_uploader(
             "Drop PDFs here",
             type=["pdf"],
@@ -522,34 +541,39 @@ def render_candidate_ranking(nlp, sbert_model, tfidf_vectorizer) -> None:
     with mc1:
         st.markdown(f"""
         <div style="{_card_base}">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">TOTAL UPLOADED</p>
-            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:#e8e4dd; margin:0; line-height:1;">{total_uploaded}</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">PDF files</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">Total Uploaded</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:#1a1a1a; margin:0; line-height:1;">{total_uploaded}</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#a39a86; margin:6px 0 0 0;">PDF files</p>
         </div>""", unsafe_allow_html=True)
     with mc2:
         st.markdown(f"""
         <div style="{_card_base}">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">CANDIDATES RANKED</p>
-            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:#e8e4dd; margin:0; line-height:1;">{candidates_ranked}</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">processed</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">Ranked</p>
+            <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:#1a1a1a; margin:0; line-height:1;">{candidates_ranked}</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#a39a86; margin:6px 0 0 0;">processed</p>
         </div>""", unsafe_allow_html=True)
     with mc3:
         st.markdown(f"""
         <div style="{_card_base} border-top:3px solid {GREEN};">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">TOP SCORE</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">Top Score</p>
             <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{GREEN}; margin:0; line-height:1;">{top_score:.3f}</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">semantic match</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#a39a86; margin:6px 0 0 0;">semantic match</p>
         </div>""", unsafe_allow_html=True)
     with mc4:
         st.markdown(f"""
         <div style="{_card_base} border-top:3px solid {BLUE};">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">AVG SCORE</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">Avg Score</p>
             <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{BLUE}; margin:0; line-height:1;">{avg_score:.3f}</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">across all CVs</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#a39a86; margin:6px 0 0 0;">across all CVs</p>
         </div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(f'<div class="section-label">Top-{min(top_k, len(top_results))} Ranking</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <div class="section-label" style="margin:0; padding:0; border:none;">Ranked Leaderboard — Top {min(top_k, len(top_results))}</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:13px; color:#9a9488;">Sorted by semantic match score</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     for rank, candidate in enumerate(top_results, 1):
         display_score = candidate["score"] / 100
@@ -557,37 +581,37 @@ def render_candidate_ranking(nlp, sbert_model, tfidf_vectorizer) -> None:
         if display_score >= 0.65:
             tier, tier_color = "Strong Match", GREEN
             accent_style = f"border-left:3px solid {GREEN};"
-            badge_style = f"background:rgba(29,158,117,0.12); color:{GREEN}; border:1px solid rgba(29,158,117,0.35);"
+            badge_style = f"background:#e6f5ee; color:{GREEN}; border:1px solid #cfe9dd;"
         elif display_score >= 0.40:
             tier, tier_color = "Moderate", BLUE
             accent_style = f"border-left:3px solid {BLUE};"
-            badge_style = f"background:rgba(55,138,221,0.12); color:{BLUE}; border:1px solid rgba(55,138,221,0.35);"
+            badge_style = f"background:#e7f0fb; color:{BLUE}; border:1px solid #c9ddf5;"
         else:
             tier, tier_color = "Weak", GRAY
             accent_style = f"border-left:3px solid {GRAY};"
-            badge_style = f"background:rgba(136,135,128,0.12); color:{GRAY}; border:1px solid rgba(136,135,128,0.35);"
+            badge_style = f"background:#f0eee9; color:{GRAY}; border:1px solid #ddd9d0;"
 
         skills = list(candidate["cv_features"])[:6]
         skills_html = " ".join(
-            f'<span style="font-family:\'DM Mono\',monospace; font-size:0.6rem; color:#888; border:1px solid #2a2a2a; padding:2px 8px; border-radius:12px; margin-right:4px; margin-bottom:4px; display:inline-block;">{s}</span>'
+            f'<span style="font-family:\'DM Mono\',monospace; font-size:0.6rem; color:#7a7466; background:#f1eee7; border:1px solid #e6e1d6; padding:2px 8px; border-radius:6px; margin-right:4px; margin-bottom:4px; display:inline-block;">{s}</span>'
             for s in skills
-        ) if skills else '<span style="color:#333; font-size:0.72rem; font-family:\'DM Mono\',monospace;">no skills detected</span>'
+        ) if skills else '<span style="color:#a39a86; font-size:0.72rem; font-family:\'DM Mono\',monospace;">no skills detected</span>'
 
         col_num, col_card = st.columns([1, 11], gap="small")
         with col_num:
             st.markdown(f"""
-            <div style="background:#111111; border:1px solid #1e1e1e; border-radius:8px; padding:24px 8px; text-align:center;">
+            <div style="background:#fff; border:1px solid #e4e0d8; border-radius:14px; padding:24px 8px; text-align:center;">
                 <p style="font-family:'Instrument Serif',serif; font-size:1.9rem; color:{tier_color}; margin:0; line-height:1;">#{rank}</p>
             </div>""", unsafe_allow_html=True)
         with col_card:
             st.markdown(f"""
-            <div style="background:#111111; border:1px solid #1e1e1e; {accent_style} border-radius:8px; padding:18px 22px;">
+            <div style="background:#fff; border:1px solid #e4e0d8; {accent_style} border-radius:14px; padding:16px 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
                     <div>
-                        <p style="font-size:0.92rem; color:#e8e4dd; margin:0 0 4px 0; font-weight:500;">{candidate['filename']}</p>
-                        <p style="font-family:'DM Mono',monospace; font-size:1.3rem; color:{tier_color}; margin:0; line-height:1;">{display_score:.3f}</p>
+                        <p style="font-size:0.92rem; color:#1a1a1a; margin:0 0 4px 0; font-weight:600;">{candidate['filename']}</p>
+                        <p style="font-family:'DM Mono',monospace; font-size:1.2rem; color:{tier_color}; margin:0; line-height:1;">{display_score:.3f}</p>
                     </div>
-                    <span style="font-family:'DM Mono',monospace; font-size:0.58rem; {badge_style} padding:4px 12px; border-radius:3px; letter-spacing:1.5px; white-space:nowrap;">{tier.upper()}</span>
+                    <span style="font-family:'DM Mono',monospace; font-size:0.58rem; {badge_style} padding:4px 12px; border-radius:999px; letter-spacing:1.5px; white-space:nowrap;">{tier.upper()}</span>
                 </div>
                 <div style="margin-bottom:10px;">{skills_html}</div>
             </div>""", unsafe_allow_html=True)
@@ -603,10 +627,10 @@ def render_evaluation() -> None:
     GREEN = "#1D9E75"
     BLUE = "#378ADD"
     GRAY = "#888780"
-    BG = "#111111"
-    GRID = "#2a2a2a"
-    TEXT = "#e8e4dd"
-    SUBTEXT = "#7a7a7a"
+    BG = "#ffffff"
+    GRID = "#e4e0d8"
+    TEXT = "#1a1a1a"
+    SUBTEXT = "#5a564e"
     GOLD = "#c8b560"
 
     def _layout(**kw):
@@ -620,42 +644,43 @@ def render_evaluation() -> None:
         base.update(kw)
         return base
 
+    st.markdown('<p class="page-eyebrow">System Evaluation</p>', unsafe_allow_html=True)
     st.markdown('<p class="page-title">System Evaluation</p>', unsafe_allow_html=True)
-    st.markdown('<p class="page-subtitle">NLP pipeline performance — notebook-verified results</p>', unsafe_allow_html=True)
+    st.markdown('<p class="page-subtitle">NLP pipeline performance — notebook-verified results.</p>', unsafe_allow_html=True)
 
     # ── 1. Metric Cards ────────────────────────────────────────────────────────
     st.markdown('<div class="section-label">Performance Metrics</div>', unsafe_allow_html=True)
-    _card = "background:#111111; border:1px solid #1e1e1e; border-radius:8px; padding:20px 16px; text-align:center;"
+    _card = "background:#fff; border:1px solid #e4e0d8; border-radius:14px; padding:20px 16px; text-align:center;"
     c1, c2, c3, c4 = st.columns(4, gap="small")
     with c1:
         st.markdown(f"""
         <div style="{_card} border-top:3px solid {BLUE};">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">PRECISION</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">Precision</p>
             <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{BLUE}; margin:0; line-height:1;">0.9524</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">TP / (TP + FP)</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#a39a86; margin:6px 0 0 0;">TP / (TP + FP)</p>
         </div>""", unsafe_allow_html=True)
     with c2:
         st.markdown(f"""
         <div style="{_card} border-top:3px solid {BLUE};">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">RECALL</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">Recall</p>
             <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{BLUE}; margin:0; line-height:1;">0.8000</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">TP / (TP + FN)</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#a39a86; margin:6px 0 0 0;">TP / (TP + FN)</p>
         </div>""", unsafe_allow_html=True)
     with c3:
         st.markdown(f"""
         <div style="{_card} border-top:3px solid {GREEN};">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">F1-SCORE</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">F1-Score</p>
             <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{GREEN}; margin:0; line-height:1;">0.8696</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">
-                <span style="background:#1a2a1a; color:#5a9a5a; padding:2px 8px; border-radius:3px; letter-spacing:1px;">TARGET ACHIEVED</span>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; margin:6px 0 0 0;">
+                <span class="badge-green">TARGET ACHIEVED</span>
             </p>
         </div>""", unsafe_allow_html=True)
     with c4:
         st.markdown(f"""
         <div style="{_card} border-top:3px solid {GREEN};">
-            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#555; letter-spacing:2px; margin:0 0 8px 0;">HYBRID ACCURACY</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.6rem; color:#a39a86; letter-spacing:0.14em; text-transform:uppercase; margin:0 0 8px 0;">Hybrid Accuracy</p>
             <p style="font-family:'Instrument Serif',serif; font-size:2.4rem; color:{GREEN}; margin:0; line-height:1;">4 / 5</p>
-            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#555; margin:6px 0 0 0;">test cases — 80.0%</p>
+            <p style="font-family:'DM Mono',monospace; font-size:0.65rem; color:#a39a86; margin:6px 0 0 0;">test cases — 80.0%</p>
         </div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -669,7 +694,7 @@ def render_evaluation() -> None:
             z=[[21, 5], [1, 9]],
             x=["Pred: Skill", "Pred: Non-skill"],
             y=["Actual: Skill", "Actual: Non-skill"],
-            colorscale=[[0, "#0d1f16"], [0.5, "#1D9E75"], [1, "#52c49e"]],
+            colorscale=[[0, "#f0f9f5"], [0.5, "#52c49e"], [1, "#1D9E75"]],
             showscale=False,
             text=[[21, 5], [1, 9]],
             texttemplate="%{text}",
@@ -763,15 +788,15 @@ def render_evaluation() -> None:
 
     def _cell(v):
         if v >= 0.65:
-            return f"background:rgba(29,158,117,0.15); color:{GREEN}; border:1px solid rgba(29,158,117,0.3);"
+            return f"background:#e6f5ee; color:{GREEN}; border:1px solid #cfe9dd;"
         elif v >= 0.40:
-            return f"background:rgba(55,138,221,0.15); color:{BLUE}; border:1px solid rgba(55,138,221,0.3);"
-        return f"background:rgba(136,135,128,0.15); color:{GRAY}; border:1px solid rgba(136,135,128,0.3);"
+            return f"background:#e7f0fb; color:{BLUE}; border:1px solid #c9ddf5;"
+        return f"background:#f0eee9; color:{GRAY}; border:1px solid #ddd9d0;"
 
-    _exp_color = {"HIGH": GREEN, "LOW": "#c05050", "MODERATE": GOLD}
+    _exp_color = {"HIGH": GREEN, "LOW": "#b05050", "MODERATE": GOLD}
     rows = ""
     for i, (case, exp, vals) in enumerate(zip(_cases_full, _expected, _scores)):
-        bg = "#161616" if i % 2 == 0 else "#111111"
+        bg = "#f9f7f4" if i % 2 == 0 else "#ffffff"
         rows += f"""<tr style="background:{bg};">
             <td style="padding:8px 10px; color:{SUBTEXT}; font-size:0.78rem;">{case}</td>
             <td style="padding:8px; text-align:center; color:{_exp_color.get(exp, TEXT)}; font-size:0.72rem; letter-spacing:1px; font-family:'DM Mono',monospace;">{exp}</td>
@@ -784,14 +809,14 @@ def render_evaluation() -> None:
     <div class="card" style="margin-bottom:24px;">
         <div class="section-label">Similarity Score Heatmap</div>
         <p style="font-family:'DM Mono',monospace; font-size:0.72rem; margin:0 0 12px 0;">
-            <span style="background:rgba(29,158,117,0.2); color:{GREEN}; padding:3px 10px; border-radius:3px; margin-right:8px;">&ge; 0.65 &nbsp;HIGH</span>
-            <span style="background:rgba(55,138,221,0.2); color:{BLUE}; padding:3px 10px; border-radius:3px; margin-right:8px;">0.40 – 0.64 &nbsp;MODERATE</span>
-            <span style="background:rgba(136,135,128,0.2); color:{GRAY}; padding:3px 10px; border-radius:3px;">&lt; 0.40 &nbsp;LOW</span>
+            <span style="background:#e6f5ee; color:{GREEN}; padding:3px 10px; border-radius:999px; margin-right:8px; border:1px solid #cfe9dd;">&ge; 0.65 &nbsp;HIGH</span>
+            <span style="background:#e7f0fb; color:{BLUE}; padding:3px 10px; border-radius:999px; margin-right:8px; border:1px solid #c9ddf5;">0.40 – 0.64 &nbsp;MODERATE</span>
+            <span style="background:#f0eee9; color:{GRAY}; padding:3px 10px; border-radius:999px; border:1px solid #ddd9d0;">&lt; 0.40 &nbsp;LOW</span>
         </p>
         <table style="width:100%; border-collapse:separate; border-spacing:3px; font-size:0.82rem;">
             <thead><tr>
-                <th style="text-align:left; color:#555; padding:6px 10px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">TEST CASE</th>
-                <th style="text-align:center; color:#555; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">EXPECTED</th>
+                <th style="text-align:left; color:#a39a86; padding:6px 10px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">TEST CASE</th>
+                <th style="text-align:center; color:#a39a86; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">EXPECTED</th>
                 <th style="text-align:center; color:{GRAY}; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">TF-IDF</th>
                 <th style="text-align:center; color:{BLUE}; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">SBERT</th>
                 <th style="text-align:center; color:{GREEN}; padding:6px; font-weight:400; font-size:0.68rem; letter-spacing:1px; font-family:'DM Mono',monospace;">HYBRID</th>
@@ -848,7 +873,7 @@ def render_evaluation() -> None:
             marker_color=_topk_colors,
             text=[f"{s:.4f}" for s in _topk_scores],
             textposition="inside",
-            textfont=dict(color=TEXT, size=11),
+            textfont=dict(color="#fff", size=11),
         )])
         fig_topk.add_vline(
             x=0.45, line_dash="dash", line_color=GOLD, line_width=1.5,
