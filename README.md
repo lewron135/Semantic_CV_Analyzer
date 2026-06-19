@@ -70,32 +70,6 @@ streamlit run app.py
 
 ---
 
-## Project Structure
-
-```
-AOL_NLP/
-├── app.py                         # Streamlit web application entry point
-├── src/
-│   ├── extraction/
-│   │   ├── engine.py              # Core NER engines, SBERT scoring, and TF-IDF matrix math
-│   │   └── filters.py             # Anchor-based semantic relevance filtering
-│   ├── utils/
-│   │   └── preprocessor.py        # PDF text cleaning, lemmatization, and encoding repairs
-│   └── ui.py                      # Streamlit UI design and layout components
-├── models/
-│   ├── tfidf_model.pkl            # Serialized TF-IDF vectorizer + baseline resume matrix
-│   └── smart_skills.json          # Extracted skill vocabulary from the Ejaz corpus (7,500+ tokens)
-├── data/
-│   └── raw/                       # Raw datasets (Resume CSVs + Job Descriptions + sample PDFs)
-├── notebooks/
-│   ├── 01_Data_Prep_and_EDA.ipynb          # Data loading, schema alignment, merging, and EDA
-│   ├── 02_NER_and_Feature_Extraction.ipynb # Preprocessing pipeline, TF-IDF, NER, and RapidFuzz
-│   └── 03_Semantic_Matching_and_Evaluation.ipynb  # Cross-algorithm stress testing and validation
-└── requirements.txt
-```
-
----
-
 ## Evaluation
 
 The system was evaluated against 15 manually annotated ground-truth sentences (10 technical, 5 administrative noise phrases) comprising 25 total true skill entities:
@@ -147,3 +121,6 @@ Stress-testing the algorithms across 5 distinct real-world hiring scenarios prov
 - **Fuzzy Ingestion** — RapidFuzz
 - **Deployment & Interface** — Streamlit
 - **Data Engineering** — Pandas, NumPy
+
+## Demo Video
+Link: https://drive.google.com/file/d/17qvesX1fdycqsEEg6tWV0IavVtDPogeU/view?usp=share_link
